@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.p2p.dao.TClaimDao">
+	<!-- 更新债权 -->
+	<update id="updateBuyClaim" >
+		<![CDATA[
+			update t_claim set remainClaimAmount= remainClaimAmount-#{remainClaimAmount},remainClaimPriceAmount=remainClaimPriceAmount-#{remainClaimPriceAmount},
+			remainClaimCapitalAmount = remainClaimCapitalAmount-#{remainClaimCapitalAmount},remainClaimProfitAmount =remainClaimProfitAmount-#{remainClaimProfitAmount},
+			remainExpectProfitAmount = remainExpectProfitAmount-#{remainExpectProfitAmount}
+			where id=#{id} and claimStatus=2
+		]]>
+	
+	</update>
+	
+	<update id="updateFinishClaim" >
+		<![CDATA[
+			update t_claim set finishTime= #{finishTime},claimStatus=3
+			where id=#{id} and claimStatus=2
+		]]>
+	
+	</update>
+
+
+	
+</mapper>

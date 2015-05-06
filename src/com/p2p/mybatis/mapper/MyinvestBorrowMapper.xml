@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.p2p.dao.MyInvestBorrowDao">
+	<select id="selectMyInvest" resultType="MyInvestBorrowDtoAlias">
+		select b.borrowTitle,a.investTime,a.realAmount,b.deadline from t_invest a left join t_borrow b on a.borrowId=b.id where a.investorId=#{investorId} and a.result=1 and b.borrowStatus=#{borrowStatus}
+	</select>
+</mapper>

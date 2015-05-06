@@ -1,0 +1,230 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+		http://www.springframework.org/schema/beans/spring-beans-4.0.xsd " >
+		
+		<bean id="startInvestJobFactory"  class="com.p2p.job.StartInvestJobFactory">  
+		    <property name="scheduler" ref="schedulerFactoryBean" />  
+		</bean> 
+        <!-- 发送短信 -->
+        <bean id="sendSmsJobDetail"  class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">  
+		    <property name="targetObject" ref="sendSmsJob"> 
+		    </property>
+		    <property name="targetMethod" value="sendSms" />  
+		    <property name="concurrent" value="false" /><!-- 作业不并发调度 -->  
+		</bean> 
+		<bean id="sendSmsJobCronTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">  
+		    <property name="jobDetail" ref="sendSmsJobDetail" /> 
+		    <!-- 每天9-10点每2分钟执行一次 -->
+		    <property name="cronExpression" value="0 0/2 9-22 * * ?" />  
+    	</bean>   
+    	
+       	<!-- 投标核对 -->
+       
+        <bean id="queryInvestResultJobDetail"  class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">  
+		    <property name="targetObject" ref="baofooQueryJob"> 
+		    </property>
+		    <property name="targetMethod" value="queryInvestResult" />  
+		    <property name="concurrent" value="false" /><!-- 作业不并发调度 -->  
+		</bean> 
+		<bean id="queryInvestResultCronTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">  
+		    <property name="jobDetail" ref="queryInvestResultJobDetail" /> 
+		    <!-- 每2分钟执行一次 -->
+		    <property name="cronExpression" value="0 0/2 * * * ?" />  
+    	</bean>   
+    	
+    	
+    	<!-- 满标核对 -->
+        <bean id="queryFullBorrowResultJobDetail"  class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">  
+		    <property name="targetObject" ref="baofooQueryJob"> 
+		    </property>
+		    <property name="targetMethod" value="queryFullBorrowResult" />  
+		    <property name="concurrent" value="false" /><!-- 作业不并发调度 -->  
+		</bean> 
+		<bean id="queryFullBorrowResultCronTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">  
+		    <property name="jobDetail" ref="queryFullBorrowResultJobDetail" /> 
+		    <!-- 每2分钟执行一次 -->
+		    <property name="cronExpression" value="0 0/2 * * * ?" />  
+    	</bean>   
+    	
+    	<!-- 提现核对状态为2 -->
+        <bean id="queryWithdrawCashResultJobDetail"  class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">  
+		    <property name="targetObject" ref="baofooQueryJob"> 
+		    </property>
+		    <property name="targetMethod" value="queryWithdrawBorrowResult" />  
+		    <property name="concurrent" value="false" /><!-- 作业不并发调度 -->  
+		</bean> 
+		<bean id="queryWithdrawCashResultCronTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">  
+		    <property name="jobDetail" ref="queryWithdrawCashResultJobDetail" /> 
+		    <!-- 每5分钟执行一次 -->
+		    <property name="cronExpression" value="0 0/5 * * * ?" />  
+    	</bean> 
+    	
+    	<!-- 提现核对状态为1 -->
+        <bean id="queryWithdrawCashResultoneJobDetail"  class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">  
+		    <property name="targetObject" ref="baofooQueryJob"> 
+		    </property>
+		    <property name="targetMethod" value="queryWithdrawBorrowResultone" />  
+		    <property name="concurrent" value="false" /><!-- 作业不并发调度 -->  
+		</bean> 
+		<bean id="queryWithdrawCashResultontCronTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">  
+		    <property name="jobDetail" ref="queryWithdrawCashResultoneJobDetail" /> 
+		    <!-- 每3分钟执行一次 -->
+		    <property name="cronExpression" value="0 0/3 * * * ?" />  
+    	</bean> 
+    	
+    	<!-- 发放推荐奖励8块 -->
+        <bean id="refereecouponJobDetail"  class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">  
+		    <property name="targetObject" ref="refereeCouponJob"> 
+		    </property>
+		    <property name="targetMethod" value="refereecoupon" />  
+		    <property name="concurrent" value="false" /><!-- 作业不并发调度 -->  
+		</bean> 
+		<bean id="refereecouponCronTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">  
+		    <property name="jobDetail" ref="refereecouponJobDetail" /> 
+		    <!-- 每天10点，15点执行一次 -->
+		    <property name="cronExpression" value="0 0 10,15 * * ?" />  
+    	</bean> 
+    	
+    	<!-- 清除vip -->
+        <bean id="deletevipJobDetail"  class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">  
+		    <property name="targetObject" ref="refereeCouponJob"> 
+		    </property>
+		    <property name="targetMethod" value="updatevipdown" />  
+		    <property name="concurrent" value="false" /><!-- 作业不并发调度 -->  
+		</bean> 
+		<bean id="deletevipCronTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">  
+		    <property name="jobDetail" ref="deletevipJobDetail" /> 
+		    <!-- 每天1点执行一次 -->
+		    <property name="cronExpression" value="0 0 1 * * ?" />  
+    	</bean> 
+    	
+    	<!-- 清除新手奖励 -->
+        <bean id="deleteisNewJobDetail"  class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">  
+		    <property name="targetObject" ref="refereeCouponJob"> 
+		    </property>
+		    <property name="targetMethod" value="updateisNew" />  
+		    <property name="concurrent" value="false" /><!-- 作业不并发调度 -->  
+		</bean> 
+		<bean id="deleteisNewCronTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">  
+		    <property name="jobDetail" ref="deleteisNewJobDetail" /> 
+		    <!-- 每天1点执行一次 -->
+		    <property name="cronExpression" value="0 0 1 * * ?" />  
+    	</bean> 
+    	
+		<!-- 还款核对 -->
+        <bean id="queryRepayBorrowResultJobDetail"  class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">  
+		    <property name="targetObject" ref="baofooQueryJob"> 
+		    </property>
+		    <property name="targetMethod" value="queryRepayBorrowResult" />  
+		    <property name="concurrent" value="false" /><!-- 作业不并发调度 -->  
+		</bean> 
+		<bean id="queryRepayBorrowResultCronTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">  
+		    <property name="jobDetail" ref="queryRepayBorrowResultJobDetail" /> 
+		    <!-- 每2分钟执行一次 -->
+		    <property name="cronExpression" value="0 0/2 * * * ?" />  
+    	</bean>   
+    	
+    	<!-- 转账核对 -->
+        <bean id="queryTransferResultJobDetail"  class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">  
+		    <property name="targetObject" ref="baofooQueryJob"> 
+		    </property>
+		    <property name="targetMethod" value="queryTransferResult" />  
+		    <property name="concurrent" value="false" /><!-- 作业不并发调度 -->  
+		</bean> 
+		<bean id="queryTransferResultCronTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">  
+		    <property name="jobDetail" ref="queryTransferResultJobDetail" /> 
+		    <!-- 每2分钟执行一次 -->
+		    <property name="cronExpression" value="0 0/2 * * * ?" />  
+    	</bean>   
+    	
+		<!-- 首投红包，添加 -->
+        <bean id="setUserRedenvelops"  class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">  
+		    <property name="targetObject" ref="setUserRedenvelopesJob"> 
+		    </property>
+		    <property name="targetMethod" value="setUserRedenvelops" />  
+		    <property name="concurrent" value="false" /><!-- 作业不并发调度 -->  
+		</bean> 
+		<bean id="setFristInvestUserRedenvelops" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">  
+		    <property name="jobDetail" ref="setUserRedenvelops" /> 
+		    <!-- 每30分钟执行一次 -->
+		    <property name="cronExpression" value="0 0/30 * * * ?" />  
+    	</bean>   
+    	<!-- 首投红包，发放 -->
+        <bean id="sendOutUserFristInvestRedPapers"  class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">  
+		    <property name="targetObject" ref="setUserRedenvelopesJob"> 
+		    </property>
+		    <property name="targetMethod" value="sendOutUserRedPapers" />  
+		    <property name="concurrent" value="false" /><!-- 作业不并发调度 -->  
+		</bean> 
+		<bean id="sendOutFristUserRedPapers" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">  
+		    <property name="jobDetail" ref="sendOutUserFristInvestRedPapers" /> 
+		    <!-- 每天10点和15点执行分钟执行一次 -->
+		    <property name="cronExpression" value="0 0 10,15 * * ?" />
+    	</bean>   
+    	
+    	<!-- 用户投资奖励，发放 -->
+        <bean id="setOutUsersInvestAward"  class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">  
+		    <property name="targetObject" ref="setUserRedenvelopesJob"> 
+		    </property>
+		    <property name="targetMethod" value="setOutUsersAward" />  
+		    <property name="concurrent" value="false" /><!-- 作业不并发调度 -->  
+		</bean> 
+		<bean id="sendOutUsersInvestAward" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">  
+		    <property name="jobDetail" ref="setOutUsersInvestAward" /> 
+		    <!-- 每10分钟执行一次 -->
+		    <property name="cronExpression" value="0 0/10 * * * ?" />
+    	</bean>   
+    	
+    	<!-- 获取银行卡信息 -->
+       
+        <bean id="queryUserBankAddFLM"  class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">  
+		    <property name="targetObject" ref="baofooQueryJob"> 
+		    </property>
+		    <property name="targetMethod" value="queryUserBank" />  
+		    <property name="concurrent" value="false" /><!-- 作业不并发调度 -->  
+		</bean> 
+		<bean id="queryUserBankAddforFLM" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">  
+		    <property name="jobDetail" ref="queryUserBankAddFLM" /> 
+		    <!-- 每天1点执行一次 -->
+		    <property name="cronExpression" value="0 0 1 * * ?" />  
+    	</bean>  
+    	<!-- 每日新用户注册，实名，投资统计-->
+       
+        <bean id="setNowDayStatistics"  class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">  
+		    <property name="targetObject" ref="userStatisticsJob"> 
+		    </property>
+		    <property name="targetMethod" value="setUserDayStatistics" />  
+		    <property name="concurrent" value="false" /><!-- 作业不并发调度 -->  
+		</bean> 
+		<bean id="setNewUserDayStatistics" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">  
+		    <property name="jobDetail" ref="setNowDayStatistics" /> 
+		    <!-- 每天1点执行一次 -->
+		    <property name="cronExpression" value="0 0 1 * * ?" />  
+    	</bean>  
+
+        <!-- 总管理类 如果将lazy-init='false'那么容器启动就会执行调度程序  -->
+        <bean id="schedulerFactoryBean" lazy-init="false" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+            <property name="triggers">
+                <list>
+                   <!-- <ref bean="sendSmsJobCronTrigger"/>-->
+                   <ref bean="queryInvestResultCronTrigger"/>
+                   <ref bean="queryFullBorrowResultCronTrigger"/>            
+                   <ref bean="queryRepayBorrowResultCronTrigger"/> 
+                   <ref bean="queryWithdrawCashResultCronTrigger"/>      
+                   <ref bean="refereecouponCronTrigger"/>
+                   <ref bean="deletevipCronTrigger"/>       
+                   <ref bean="queryWithdrawCashResultCronTrigger"/>
+                   <ref bean="setFristInvestUserRedenvelops"/>  
+                   <ref bean="sendOutFristUserRedPapers"/>   
+                   <ref bean="deleteisNewCronTrigger"/>  
+                   <ref bean="sendOutUsersInvestAward"/>  
+                   <ref bean="queryWithdrawCashResultontCronTrigger"/>          
+                   <ref bean="queryUserBankAddforFLM"/>  
+                   <ref bean="queryTransferResultCronTrigger"/>   
+                   <ref bean="setNewUserDayStatistics"/>
+                </list>
+            </property>
+        </bean>
+</beans>

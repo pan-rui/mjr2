@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.p2p.dao.TInvestAwardDao">
+	<select id="queryTInvestAwardByBorrowIdAndPeroidCount"
+		resultType="int">
+		select count(1) from t_invest_award where awardStatus=0 and
+		borrowId=#{borrowId} and numOfPeroids=#{numOfPeroids}
+	</select>
+
+
+	<update id="updateTInvestAwardByBorrowIdAndPeroid">
+		update t_invest_award t set t.awardStatus=1 WHERE
+		awardStatus=0 and borrowId=#{borrowId} and
+		numOfPeroids=#{numOfPeroids}
+	</update>
+
+	<select id="querySetoutUsersAward" resultType="tInvestAwardlAlias">
+		SELECT
+		t.id,
+		t.userId,
+		t.awardAmount,
+		t.awardStatus,
+		t.remarks
+		FROM
+		t_invest_award AS t LEFT JOIN t_thrid_account AS a ON t.userId = a.userId
+		WHERE
+		t.awardStatus = 1 AND a.isOpen = 1
+	</select>
+	<update id="updateUserAwardType">
+		update t_invest_award t set t.awardStatus=#{awardStatus} WHERE t.awardStatus=1 AND t.id =#{id}
+	</update>
+	<update id="updateUserAwardSuccessType">
+		update t_invest_award t set t.awardStatus=#{awardStatus} WHERE t.awardStatus=2 AND t.id =#{id}
+	</update>
+	
+	<update id="updateTInvestAwardSuccess">
+		update t_invest_award t set t.awardStatus=#{awardStatus},t.awardTime=#{awardTime} ,t.statusRemarks=#{statusRemarks} 
+		WHERE awardStatus=2 and id=#{id}
+	</update>
+	
+	<update id="updateTInvestAwardReback">
+		update t_invest_award t set t.awardStatus=1,t.statusRemarks=#{statusRemarks} 
+		WHERE awardStatus=2 and id=#{id}
+	</update>
+	
+	<select id="selectInvestAward" resultType="InvestAwardUserDtoAlias">
+		select a.*,b.userName,b.cellPhone from t_invest_award a left join c_user b on a.userId=b.id where 1=1
+		<if test="userName != null and userName != ''"> and b.userName like "%"#{userName}"%"</if>
+		<if test="cellPhone != null and cellPhone != ''"> and b.cellPhone like "%"#{cellPhone}"%"</if>
+     	<if test="awardLevel != null and awardLevel != ''"> and a.awardLevel like "%"#{awardLevel}"%"</if>
+     	<if test="awardStatus != null and awardStatus != ''"> and a.awardStatus = #{awardStatus}</if>
+     	<if test="awardType != null and awardType != ''"> and a.awardType = #{awardType}</if>
+     	<if test="borrowTitle != null and borrowTitle != ''"> and a.borrowTitle = #{borrowTitle}</if>
+     	order by a.createTime desc
+	</select>
+	
+	
+</mapper>

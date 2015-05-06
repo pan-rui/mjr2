@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.p2p.dao.TRechargeDao">
+	<update id="updateRechargeSuccess" >
+		update t_recharge set rechargeRealAmount= #{rechargeRealAmount},
+		feeAmount = #{feeAmount},result = #{result},thirdOrdId = #{thirdOrdId},bankName = #{bankName},
+		remarks = #{remarks},finishTime = #{finishTime}
+		where id=#{id} and ordId=#{ordId} and result=0
+	</update>
+	
+	<select id="selectUserTrecharge" resultType="TRechargeAlias">
+		select * from t_recharge where ordId=#{ordId}
+	</select>
+	
+	<update id="updateUserTrecharge">
+		update t_recharge set rechargeRealAmount=#{rechargeRealAmount},
+		feeAmount=#{feeAmount},result=1,finishTime=#{finishTime} 
+		where ordId=#{ordId} and result=0
+	</update>
+	
+	<select id="selecttrechargefortime" resultType="java.math.BigDecimal">
+		<![CDATA[
+		select sum(rechargeAmount) as rechargeAmount  from t_recharge a where userId=#{userId} and DATEDIFF(now(),a.finishTime) < 15 and result=1
+		]]>
+	</select>
+</mapper>

@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN" "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+
+	<settings>
+		<setting name="lazyLoadingEnabled" value="true" />
+		<setting name="aggressiveLazyLoading" value="falae" />
+	</settings>
+
+	<typeAliases>
+		<typeAlias type="com.p2p.model.BAdmin" alias="bAdminAlias"/>
+		<typeAlias type="com.p2p.model.BMenu" alias="bMenuAlias"/>
+		<typeAlias type="com.p2p.model.BRole" alias="bRoleAlias"/>
+		<typeAlias type="com.p2p.model.BRoleAdmin" alias="bRoleAdminAlias"/>
+		<typeAlias type="com.p2p.model.BRoleMenu" alias="bRoleMenuAlias"/>
+		<typeAlias type="com.p2p.model.BPara" alias="bParaAlias"/>
+		<typeAlias type="com.p2p.model.BArea" alias="bAreaAlias"/>
+		<typeAlias type="java.util.HashMap" alias="hashAlias"/>
+		<typeAlias type="com.p2p.model.TContract" alias="TContractAlias"/>
+		<typeAlias type="com.p2p.model.TBorrow" alias="tBorrowAlias"/>
+		<typeAlias type="com.p2p.model.TInvest" alias="tInvestAlias"/>
+		<typeAlias type="com.p2p.model.TRepay" alias="tRepayAlias"/>
+		<typeAlias type="com.p2p.model.TJobBorrower" alias="tJobBorrowerAlias"/>
+		<typeAlias type="com.p2p.model.TBorrowAttr" alias="tBorrowAttrAlias"/>
+		<typeAlias type="com.p2p.model.CMediaReport" alias="mediaAttrAlias"/>
+		<typeAlias type="com.p2p.model.CNotice" alias="cNoticeAttrAlias"/>
+		<typeAlias type="com.p2p.dto.RechargeRecordDto" alias="RechargeRecordAlias"/>
+		<typeAlias type="com.p2p.dto.TFundRecordDto" alias="TFundRecordDtoAlias"/>
+		<typeAlias type="com.p2p.model.TPerson" alias="tPersonAlias"/>
+		<typeAlias type="com.p2p.model.TRecharge" alias="TRechargeAlias"/>
+		<typeAlias type="com.p2p.model.TWithdrawCash" alias="TWithdrawCashAlias"/>
+		<typeAlias type="com.p2p.model.CUser" alias="cUserAlias"/>
+		<typeAlias type="com.p2p.dto.TBankCardDto" alias="TBankCardDtoAlias"/>
+		<typeAlias type="com.p2p.dto.TWithdrawCashDto" alias="TWithdrawCashDtoAlias"/>
+		<typeAlias type="com.p2p.dto.TInvestDto" alias="TInvestDtoAlias"/>
+		<typeAlias type="com.p2p.model.TNoticeSetting" alias="tNoticeSettingAlias"/>
+		<typeAlias type="com.p2p.dto.MyInvestBorrowDto" alias="MyInvestBorrowDtoAlias"/>
+		<typeAlias type="com.p2p.dto.UserMoneyDto" alias="UserMoneyDtoAlias"/>
+		<typeAlias type="com.p2p.model.TAccount" alias="TAccountAlias"/>
+		<typeAlias type="com.p2p.model.CMessage" alias="CMessageAlias"/>
+		<typeAlias type="com.p2p.model.CSms" alias="cSmsAlias"/>
+		<typeAlias type="com.p2p.model.CSmsRecord" alias="CSmsRecordAlias"/>
+		<typeAlias type="com.p2p.model.TThridAccount" alias="tThridAccountAlias"/>
+		<typeAlias type="com.p2p.model.CHelp" alias="cHelpAlias"/>
+		<typeAlias type="com.p2p.model.CHelpType" alias="cHelpTypeAlias"/>
+		<typeAlias type="com.p2p.model.TRepayBorrower" alias="tRepayBorrowerAlias"/>
+		<typeAlias type="com.p2p.model.CLinks" alias="cLinksAlias"/>
+		<typeAlias type="com.p2p.model.TCoupon" alias="tCouponAlias"/>
+		<typeAlias type="com.p2p.model.TTransfer" alias="tTransferAlias"/>
+		<typeAlias type="com.p2p.model.CUserDetail" alias="CUserDetailAlias"/>
+		<typeAlias type="com.p2p.model.TInvestAward" alias="tInvestAwardlAlias"/>
+		<typeAlias type="com.p2p.model.TApplyBorrow" alias="tApplyBorrowAlias"/>
+		<typeAlias type="com.p2p.model.CBanner" alias="cBannerAlias"/>
+		<typeAlias type="com.p2p.model.TUserDayGrowthStatistics" alias="tUserDayGrowthStatisticsAlias"/>
+	<!-- DTO -->
+		<typeAlias type="com.p2p.dto.InvestAwardUserDto" alias="InvestAwardUserDtoAlias"/>
+		<typeAlias type="com.p2p.dto.RepayDto" alias="repayDtoAlias"/>
+		<typeAlias type="com.p2p.dto.UserDto" alias="dUserAlias"/>
+		<typeAlias type="com.p2p.dto.BorrowDto" alias="borrowDtoAlias"/>
+		<typeAlias type="com.p2p.dto.RechargeRecordDto" alias="RechargeRecordAlias"/>
+		<typeAlias type="com.p2p.dto.TFundRecordDto" alias="TFundRecordDtoAlias"/>
+		<typeAlias type="com.p2p.dto.TRepayBorrowerDto" alias="tRepayBorrowerDtoAlias"/>
+		<typeAlias type="com.p2p.dto.InvestAwardRepayDto" alias="investAwardRepayDtoAlias"/>
+		<typeAlias type="com.p2p.dto.TRefereeDto" alias="TRefereeDtoAlias"/>
+		<typeAlias type="com.p2p.dto.AgreementMsgDto" alias="AgreementMsgDtoAlias"/>
+		<typeAlias type="com.p2p.dto.RefereeInvestDto" alias="refereeInvestDtoAlias"/>
+	</typeAliases>
+		
+	<plugins>
+		<!-- 添加分页插件 -->
+		<plugin interceptor="com.github.miemiedev.mybatis.paginator.OffsetLimitInterceptor">
+            <property name="dialectClass" value="com.github.miemiedev.mybatis.paginator.dialect.MySQLDialect"/>
+        </plugin>
+		
+	</plugins>
+</configuration>

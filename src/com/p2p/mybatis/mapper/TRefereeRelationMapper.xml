@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.p2p.dao.TRefereeRelationDao">
+	<select id="queryRefereeUserAndTUser" resultType="hashAlias">
+	SELECT
+	g_x.id AS id,
+	g_x.createTime AS createTime,
+	t_u.userName AS tUserName,
+	t_u.cellPhone AS tCellPhone,
+	b_t_u.userName AS userName,
+	b_t_u.cellPhone AS cellPhone,
+	t_p.realName AS tRealName,
+	b_t_p.realName AS realName
+	FROM
+	t_referee_relation AS g_x
+	LEFT JOIN c_user AS t_u ON g_x.refereeId = t_u.id
+	LEFT JOIN c_user AS b_t_u ON g_x.userId = b_t_u.id
+	LEFT JOIN t_person AS t_p ON t_p.userId = t_u.id
+	LEFT JOIN t_person AS b_t_p ON b_t_p.userId = b_t_u.id
+	WHERE
+	1 = 1
+	<if test="userName != null and userName != ''"> and b_t_u.userName like "%"#{userName}"%"</if>
+	<if test="cellPhone != null and cellPhone != ''"> and b_t_u.cellPhone like "%"#{cellPhone}"%"</if>
+	<if test="realName != null and realName != ''"> and b_t_p.realName like "%"#{realName}"%"</if>
+	<if test="tUserName != null and tUserName != ''"> and t_u.userName like "%"#{tUserName}"%"</if>
+	<if test="tCellPhone != null and tCellPhone != ''"> and t_u.cellPhone like "%"#{tCellPhone}"%"</if>
+	<if test="tRealName != null and tRealName != ''"> and t_p.realName like "%"#{tRealName}"%"</if>
+	</select>
+	
+	<update id="updateReferee">
+		update t_referee_relation set couponStatus=1 where userId=#{userId}
+	</update>
+	<select id="selectRefereelist" resultType="TRefereeDtoAlias">
+		SELECT
+		i.investorId,
+		c.refereeId
+		FROM
+		t_invest AS i
+		LEFT JOIN t_referee_relation c ON i.investorId=c.userId
+		
+		where i.investorId in (select userId from t_referee_relation)
+
+		AND i.investTime in (select MIN(invest.investTime) from t_invest
+		invest where invest.result=1 GROUP BY investorId)
+
+		AND i.investorId not
+		in(select c.userId FROM t_referee_relation c where couponStatus=1)
+	</select>
+	
+	<select id="selectrefereeIdforuserId" resultType="java.lang.Long">
+		select refereeId from t_referee_relation where userId=#{userId}
+	</select>
+	
+	<select id="queryRefereeUserAndTUser2" resultType="hashAlias">
+	select c.cellPhone as cellPhone,t.createTime as createTime from c_user c 
+	LEFT JOIN t_referee_relation t on c.id=t.userId 
+	where t.userId in (select userId from t_referee_relation where refereeId=#{refereeId})
+	</select>
+	
+	<select id="queryRefereeInvestListByBorrowId" resultType="refereeInvestDtoAlias">
+	SELECT
+		rr.refereeId,
+		i.id,
+		i.investorId,
+		i.realAmount,
+		i.borrowId
+		FROM
+		t_referee_relation AS rr
+		LEFT JOIN t_invest AS i ON rr.userId = i.investorId
+		where i.result=1 and i.borrowId=#{borrowId}
+	</select>
+	
+</mapper>

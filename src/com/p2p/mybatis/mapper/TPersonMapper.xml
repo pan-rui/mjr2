@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.p2p.dao.TPersonDao">
+	<select id="getPersonByUserId" resultType="tPersonAlias" >
+		select p.* from  t_person p where p.userId = #{userId}
+	</select>
+	<select id="verificationNewPersonIdcard" resultType="tPersonAlias">
+    	SELECT p.id FROM t_person AS p WHERE p.cardNo = #{cardNo} and p.userId!=#{userId}
+    </select>
+    <update id="updatePersonAuth" >
+    	update t_person p SET p.isAuth=#{isAuth},p.remark=#{remark} where p.userId=#{userId}
+    </update>
+</mapper>

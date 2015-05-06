@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xsi:schemaLocation="http://www.springframework.org/schema/aop
+	http://www.springframework.org/schema/aop/spring-aop-4.0.xsd
+	http://www.springframework.org/schema/beans
+    http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+	http://www.springframework.org/schema/context
+    http://www.springframework.org/schema/context/spring-context-4.0.xsd
+    http://www.springframework.org/schema/mvc
+    http://www.springframework.org/schema/mvc/spring-mvc-4.0.xsd">
+    
+	<bean class="org.springframework.web.servlet.mvc.annotation.DefaultAnnotationHandlerMapping" />
+	<bean class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter">
+		<property name="messageConverters">
+			<list>
+				<ref bean="string_hmc" />
+			</list>
+		</property>
+		
+	</bean>  
+	
+	<bean name="string_hmc" class="org.springframework.http.converter.StringHttpMessageConverter">
+		<property name="supportedMediaTypes">
+			<list>
+				<value>text/html;charset=utf-8</value>
+				<value>text/plain;charset=utf-8</value>
+			</list>
+		</property>
+	</bean>
+	
+	<!-- 文件上传 -->
+	<bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+		<property name="maxUploadSize">
+			<value>1048576</value>
+		</property> 
+	</bean>
+	
+    <mvc:resources mapping="/images/**" location="/images/" cache-period="31556926"/>  
+    <mvc:resources mapping="/upload/images/**" location="/upload/images/" cache-period="31556926"/> 
+    <mvc:resources mapping="/js/**" location="/js/" cache-period="31556926"/>
+    <mvc:resources mapping="/css/**" location="/css/" cache-period="31556926"/>
+    
+	<context:component-scan base-package="com.p2p">
+		<context:exclude-filter type="annotation" expression="org.springframework.stereotype.Service"/>
+		<context:exclude-filter type="annotation" expression="org.springframework.stereotype.Repository"/>
+	</context:component-scan>
+
+	<bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<property name="prefix" value="/WEB-INF/view/"/>
+		<property name="suffix" value=".jsp"/>
+		<property name="viewClass" value="org.springframework.web.servlet.view.JstlView" />
+	</bean>
+	
+	<bean id="conversionService" class="org.springframework.format.support.DefaultFormattingConversionService"/>  
+	<mvc:annotation-driven conversion-service="conversionService" />
+
+	<!-- 全局异常配置 start -->    
+    <bean id="exceptionResolver" class="org.springframework.web.servlet.handler.SimpleMappingExceptionResolver">    
+         <property name="exceptionMappings">    
+             <props>    
+                 <prop key="java.lang.Exception">errors/error</prop>    
+                 <prop key="java.lang.Throwable">errors/error</prop>    
+             </props>    
+         </property>    
+         <property name="statusCodes">    
+             <props>    
+                 <prop key="errors/error">500</prop>    
+             </props>    
+         </property>   
+         <!-- 设置日志输出级别，不定义则默认不输出警告等错误日志信息 -->    
+         <property name="warnLogCategory" value="WARN"></property>     
+         <!-- 默认错误页面，当找不到上面mappings中指定的异常对应视图时，使用本默认配置 -->    
+         <property name="defaultErrorView" value="errors/error"></property>    
+         <!-- 默认HTTP状态码 -->    
+         <property name="defaultStatusCode" value="500"></property>
+    </bean>
+     <!-- 全局异常配置 end -->  
+     <!-- 全局异常配置 end -->    
+ 	<!-- 拦截器 -->  
+  <mvc:interceptors>  
+ 		<!-- 登录拦截 -->  
+        <mvc:interceptor>  
+            <!-- 需拦截的地址 -->  
+             <mvc:mapping path="/admin/**" /> 
+            <!-- 需排除拦截的地址 -->  
+            <mvc:exclude-mapping path="/admin/loginIndex"/> 
+ 			<mvc:exclude-mapping path="/admin/adminLogin"/> 
+           <bean class="com.p2p.interceptor.AdminSessionInterceptor" /> 
+        </mvc:interceptor>  
+        <mvc:interceptor>  
+            <!-- 需拦截的地址 -->  
+             <mvc:mapping path="/admin/**" /> 
+            <!-- 需排除拦截的地址 -->  
+            <mvc:exclude-mapping path="/admin/loginIndex"/> 
+ 			<mvc:exclude-mapping path="/admin/adminLogin"/> 
+           <bean class="com.p2p.interceptor.AdminOperLogInterceptor" /> 
+        </mvc:interceptor>
+    </mvc:interceptors> 
+    
+    	<!-- 拦截器 -->  
+  <mvc:interceptors>  
+ 		<!-- 前台登录拦截 -->  
+        <mvc:interceptor>  
+            <!-- 需拦截的地址 -->  
+             <mvc:mapping path="/center/**" /> 
+            <!-- 需排除拦截的地址 -->  
+             <!-- 需排除拦截的地址 -->  
+           
+           <bean class="com.p2p.interceptor.UserLoginSessionInterceptor" /> 
+        </mvc:interceptor>
+        <!-- 宝付是否开户拦截 -->   
+        <mvc:interceptor>  
+            <!-- 需拦截的地址 -->  
+             <mvc:mapping path="/bfpay/**" /> 
+            <!-- 需排除拦截的地址 -->  
+             <!-- 需排除拦截的地址 -->  
+           <bean class="com.p2p.interceptor.BaofooInterceptor" /> 
+        </mvc:interceptor>  
+        <mvc:interceptor>  
+            <!-- 需拦截的地址 -->  
+           <mvc:mapping path="/**" /> 
+            <!-- 需排除拦截的地址 -->  
+           <mvc:exclude-mapping path="/admin/**"/> 
+           <mvc:exclude-mapping path="/css/**"/> 
+           <mvc:exclude-mapping path="/images/**"/> 
+           <mvc:exclude-mapping path="/js/**"/>
+           <mvc:exclude-mapping path="/upload/**"/>
+           <bean class="com.p2p.interceptor.UserOperLogInterceptor" />
+        </mvc:interceptor>  
+    </mvc:interceptors>    
+</beans>

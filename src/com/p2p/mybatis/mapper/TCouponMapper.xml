@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.p2p.dao.TCouponDao">
+	<select id="queryTCouponPage" resultType="tCouponAlias">
+		SELECT
+		c.*,
+		u.userName,
+		u.cellPhone
+		FROM
+		t_coupon AS c
+		INNER JOIN c_user AS u ON c.userId = u.id where 1=1 
+		<if test="cellPhone != null and cellPhone != ''">and u.cellPhone like "%"#{cellPhone}"%"</if>
+		<if test="userName != null and userName != ''">and u.userName like "%"#{userName}"%"</if>
+		<if test="couponType != null and couponType != ''">and c.couponType = #{couponType}</if>
+		<if test="couponStatus != null and couponStatus != ''">and c.couponStatus = #{couponStatus}</if>
+	</select>
+
+	<select id="queryUserNotHasRedenvelopes" resultType="tInvestAlias">
+		SELECT
+		i.investorId,
+		i.realAmount,
+		i.id
+		FROM
+		t_invest AS i
+		where i.realAmount>=100
+		AND i.investTime in (select MIN(invest.investTime) from t_invest
+		invest where invest.result=1 GROUP BY investorId)
+		AND i.investorId not
+		in(select c.userId FROM t_coupon c where couponType=1)
+	</select>
+
+	<select id="queryUserRedenvelopes" resultType="tCouponAlias">
+		SELECT
+		tc.id,
+		tc.userId,
+		tc.couponName,
+		tc.createTime,
+		tc.couponRemarks,
+		tc.couponType,
+		tc.couponStatus,
+		tc.couponAmount,
+		tc.expirationDate
+		FROM
+		t_coupon AS tc
+		WHERE
+		tc.userId = #{userId}
+	</select>
+
+
+	<select id="querySendOutRedPaperUsers" resultType="tCouponAlias">
+		SELECT
+		t.id,
+		t.userId,
+		t.couponAmount,
+		t.couponName
+		FROM
+		t_coupon AS t LEFT JOIN
+		t_thrid_account AS a ON t.userId = a.userId
+		WHERE
+		t.couponStatus =
+		#{couponStatus} AND a.isOpen = 1
+	</select>
+	<update id="updateUserCouponType">
+		update t_coupon t set t.couponStatus=#{couponStatus}
+		WHERE t.couponStatus=2 AND t.id =#{id}
+	</update>
+	<update id="updateUserCouponSuccessType">
+		update t_coupon t set t.couponStatus=#{couponStatus}
+		WHERE t.couponStatus=6 AND t.id =#{id}
+	</update>
+
+	<update id="updateUserCouponReback">
+		update t_coupon t set t.couponStatus=2 WHERE
+		t.couponStatus=6 AND t.id =#{id}
+	</update>
+
+</mapper>

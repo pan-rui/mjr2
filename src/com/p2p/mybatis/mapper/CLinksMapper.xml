@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.p2p.dao.CLinksDao">
+	<select id="queryIndexLinks" resultType="cLinksAlias">
+		SELECT
+		l.id,
+		l.linkName,
+		l.imagePath,
+		l.shortName,
+		l.linkUrl,
+		l.createTime,
+		l.description
+		FROM
+		c_links AS l
+		WHERE
+		l.isDelete = 0
+		ORDER BY
+		l.orderNo ASC
+	</select>
+</mapper>

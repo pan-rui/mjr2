@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.p2p.dao.TUserDayGrowthStatisticsDao">
+	<select id="getNewUserNums" resultType="Integer">
+		SELECT Count(c_user.id)
+		FROM c_user WHERE DATE_FORMAT(createTime ,'%Y-%m-%d') = DATE_FORMAT(NOW(),'%Y-%m-%d')
+	</select>
+	<select id="getUsersNumber" resultType="Integer">
+		SELECT Count(c_user.id)
+		FROM c_user
+	</select>
+	<select id="getNewPersonNums" resultType="Integer">
+		SELECT Count(t_person.id) FROM t_person WHERE t_person.isAuth = 1 AND
+		DATE_FORMAT(createTime ,'%Y-%m-%d') = DATE_FORMAT(NOW(),'%Y-%m-%d')
+	</select>
+	<select id="getPersonNumber" resultType="Integer">
+		SELECT
+		Count(t_person.id) FROM t_person WHERE t_person.isAuth = 1
+	</select>
+	<select id="getNewInvestNums" resultType="Integer">
+		SELECT Count(DISTINCT t_invest.investorId) FROM t_invest WHERE 
+		DATE_FORMAT(investTime ,'%Y-%m-%d') = DATE_FORMAT(NOW(),'%Y-%m-%d') AND t_invest.result=1
+	</select>
+	<select id="getInvestNumber" resultType="Integer"><!--DISTINCT 去除重复  -->
+		SELECT Count(DISTINCT t_invest.investorId) FROM t_invest WHERE t_invest.result=1
+	</select>
+	<select id="queryTUserDayGrowthStatisticsPage" resultType="tUserDayGrowthStatisticsAlias">
+		SELECT *
+		FROM t_user_day_growth_statistics 
+		WHERE 1=1 
+		<if test="starTime != null"><![CDATA[ AND statisticsTime >= #{starTime}]]></if>
+		<if test="endTime != null"><![CDATA[ AND statisticsTime <= #{endTime}]]></if>
+		order by statisticsTime DESC
+	</select>
+</mapper>

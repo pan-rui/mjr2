@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.p2p.dao.CMediaReportDao">
+	<select id="getAllMedia" resultType="mediaAttrAlias">
+		select * from c_media_report
+	</select>
+	<select id="getAllId" resultType="java.lang.Long">
+		select id from c_media_report
+	</select>
+	<select id="queryIndexNews" resultType="mediaAttrAlias">
+		SELECT
+		m.id,
+		m.title
+		FROM
+		c_media_report AS m
+		WHERE
+		m.isDelete = 0
+		ORDER BY
+		m.createTime DESC
+		LIMIT 0, 3
+	</select>
+</mapper>

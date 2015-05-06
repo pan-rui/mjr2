@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.p2p.dao.TApplyBorrowDao">
+	<select id="queryTApplyBorrowPage" resultType="tApplyBorrowAlias">
+		SELECT
+		a.id,
+		a.borrowerName,
+		a.borrowerCellPhone,
+		a.houseProvince,
+		a.borrowUse,
+		a.houseCity,
+		a.createTime,
+		a.borrowAmount,
+		a.borrowDealine,
+		a.borrowType,
+		a.address,
+		a.remarks,
+		a.userId,
+		u.userName
+		FROM
+		t_apply_borrow AS a
+		LEFT JOIN c_user AS u ON a.userId = u.id where 1=1
+		<if test="borrowerCellPhone != null and borrowerCellPhone != ''"> and borrowerCellPhone like "%"#{borrowerCellPhone}"%"</if>
+		<if test="borrowerName != null and borrowerName != ''"> and borrowerName like "%"#{borrowerName}"%"</if>
+		<if test="userName != null and userName != ''"> and userName like "%"#{userName}"%"</if>
+	</select>
+</mapper>

@@ -1,0 +1,205 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.p2p.dao.TInvestDao">
+	<select id="queryTInvestByBorrowId" resultType="tInvestAlias">
+		select * from
+		t_invest where borrowId=#{borrowId} and result=1
+	</select>
+
+	<select id="getTInvestByOrdId" resultType="tInvestAlias">
+		select * from t_invest
+		where ordId=#{ordId}
+	</select>
+
+	<select id="queryTInvestUndealCountByBorrowId" resultType="int">
+		select count(1) from t_invest where borrowId=#{borrowId} and result=0
+	</select>
+
+	<select id="queryTInvestList" resultType="tInvestAlias">
+		select * from t_invest where 1=1
+		<if test="result != null"> and result=#{result}</if>
+		<if test="borrowId != null"> and borrowId=#{borrowId}</if>
+		<if test="investTime != null"><![CDATA[ and investTime<=#{investTime}]]></if>
+	</select>
+
+
+	<select id="selectTInvestList" resultType="TInvestDtoAlias">
+		select a.*,b.userName as userName,b.cellPhone as cellPhone,c.realName
+		as realName,d.borrowTitle as borrowTitle,d.repayType as
+		repayType,d.borrowStatus as borrowStatus
+		from t_invest a left join
+		c_user b on a.investorId = b.id
+		left join t_borrow d on a.borrowId =
+		d.id
+		left join t_person c on a.investorId = c.userId where 1=1
+		<if test="userName != null and userName != ''"> and userName like "%"#{userName}"%"</if>
+		<if test="cellPhone != null and cellPhone != ''"> and cellPhone like "%"#{cellPhone}"%"</if>
+		<if test="realName != null and realName != ''"> and realName like "%"#{realName}"%"</if>
+
+		order by a.investTime desc
+	</select>
+	<select id="selectTInvestDeatil" resultType="TInvestDtoAlias"
+		parameterType="java.lang.Long">
+		select a.*,
+		d.repayType as repayType,d.borrowTitle as
+		borrowTitle,d.borrowNo as borrowNo,
+		d.deadline as deadline,d.annualRate
+		as annualRate,
+		d.repayDate as repayDate
+		from t_invest a left join
+		t_borrow d on a.borrowId=d.id
+		where a.id=#{id}
+		order by a.investTime
+		desc
+	</select>
+
+	<select id="selectTrepayMoney" resultType="tRepayAlias">
+		select
+		sum(capitalAmount) as capitalAmount,sum(profitAmount) as
+		profitAmount,repayStatus from t_repay where investId=#{investId}
+	</select>
+
+	<update id="updateInvestClaim">
+		<![CDATA[
+			update t_invest set realAmount= realAmount-#{realAmount},transferAmount=transferAmount+#{transferAmount}
+			where id=#{id} and realAmount-#{realAmount} >= 0
+		]]>
+
+	</update>
+
+	<update id="updateInvestResultByOrderId">
+
+		update t_invest set result=#{result}
+		<if test="remarks != null and remarks != ''">,remarks=#{remarks} </if>
+
+		where ordId=#{ordId} and result = 0
+
+
+	</update>
+
+	<select id="selectTInvestListfortj" resultType="TInvestDtoAlias">
+		select a.*,b.userName as userName,b.cellPhone as cellPhone,c.realName
+		as realName,d.annualRate as annualRate,d.deadline as
+		deadline,d.borrowTitle as borrowTitle,d.deadlineType as
+		deadlineType,d.repayType as repayType,d.borrowStatus as borrowStatus
+		from t_invest a left join c_user b on a.investorId = b.id
+		left join
+		t_borrow d on a.borrowId = d.id
+		left join t_person c on a.investorId =
+		c.userId where a.investorId=#{investorId} and a.result=1 and
+		d.borrowStatus =#{borrowStatus}
+		<if test="userName != null and userName != ''"> and userName like "%"#{userName}"%"</if>
+
+		<if test="investTimeup != null"><![CDATA[ and investTime >= #{investTimeup}]]></if>
+		<if test="investTimeend != null"><![CDATA[ and investTime <= #{investTimeend}]]></if>
+
+
+		order by a.investTime desc
+	</select>
+
+	<select id="queryTInvestListPage" resultType="TInvestDtoAlias">
+		select i.*,u.userName,u.cellPhone,p.realName
+		from t_invest i left join
+		c_user u on i.investorId = u.id
+		left join t_person p on p.userId = u.id
+		where 1=1
+		<if test="borrowId != null"> and i.borrowId=#{borrowId}</if>
+		<if test="result != null"> and i.result=#{result}</if>
+		order by i.investTime desc
+	</select>
+	<select id="selectInvestList" resultType="tRepayAlias"
+		parameterType="java.lang.Long">
+		select * from t_repay where investId=#{id}
+	</select>
+
+	<select id="queryTInvestAndThirdAccountsListByBorrowId"
+		resultType="TInvestDtoAlias" parameterType="java.lang.Long">
+		SELECT
+		i.realAmount,
+		ta.thirdUserId
+		FROM
+		t_invest AS i
+		LEFT JOIN t_thrid_account AS ta ON i.investorId = ta.userId
+		WHERE
+		borrowId=#{borrowId}
+	</select>
+
+
+	<select id="selectinvestfortime" resultType="java.math.BigDecimal">
+		<![CDATA[
+			select sum(realAmount) from t_invest where investorId=#{investorId} and DATEDIFF(now(),investTime) < 15 and result=1
+		]]>
+	</select>
+	<select id="getInvestCounts" resultType="java.lang.Long"
+		parameterType="java.lang.Long">
+		SELECT
+		Count(i.id)
+		FROM
+		t_invest AS i
+		WHERE i.investorId =
+		#{userId}
+	</select>
+	<select id="getFristInvest" resultType="java.math.BigDecimal"
+		parameterType="java.lang.Long">
+		SELECT
+		i.realAmount
+		FROM
+		t_invest AS i
+		WHERE i.investorId =
+		#{userId}
+		ORDER BY
+		i.investTime ASC
+		LIMIT 0, 1
+
+	</select>
+
+	<select id="selectAgreementMsg" resultType="AgreementMsgDtoAlias">
+		select 
+		a.borrowerName as borrowerName,
+		a.borrowerIdCard as borrowerIdCard,
+		b.realName as realName,
+		c.realAmount as realAmount,
+		d.deadline as deadline,
+		d.deadlineType as deadlineType,
+		e.userName as userName,
+		d.borrowPurpose as borrowPurpose,
+		d.annualRate as annualRate,
+		d.auditTime as auditTime,
+		d.repayDate as repayDate,
+		d.repayType as repayType
+		from t_invest c 
+		LEFT JOIN t_borrow d on c.borrowId=d.id
+		left JOIN t_person_borrower a on d.personBorrowerId=a.id
+		LEFT JOIN t_person b on b.userId=c.investorId
+		left join c_user e on e.id=c.investorId
+		where c.id=#{id}
+	</select>
+
+	<select id="queryTInvestAwardListByBorrowId" resultType="investAwardRepayDtoAlias">
+		SELECT
+		i.id,
+		i.borrowId,
+		i.realAmount,
+		i.investorId,
+		ud.awardLevel,
+		ud.isNew,
+		ud.awardTimeLevel,
+		repay.capitalAmount
+		FROM
+		t_invest AS i
+		LEFT JOIN c_user_detail ud on ud.userId=i.investorId
+		LEFT JOIN (select sum(r.capitalAmount) AS capitalAmount,r.investorId
+		from t_repay r where r.repayStatus=1 GROUP BY r.investorId) as repay
+		on repay.investorId=i.investorId
+		where i.result=1 and
+		i.borrowId=#{borrowId}
+
+	</select>
+	
+	<select id="selectInvestListforbid" resultType="TInvestDtoAlias">
+		select a.realAmount as realAmount,a.investTime as investTime,b.userName as userName,b.cellPhone as cellPhone,c.realName as realName
+		from t_invest a left join c_user b on a.investorId=b.id
+		left join t_person c on a.investorId=c.userId
+		where borrowId=#{borrowId}
+	</select>
+</mapper>

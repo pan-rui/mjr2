@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.p2p.dao.TBankCardDao">
+	<select id="selectTBankCardList" resultType="TBankCardDtoAlias">
+		select a.*,b.userName as userName,b.cellPhone as cellPhone,c.realName
+		as realName
+		from t_bank_card a left join c_user b on a.userId = b.id
+		left join t_person
+		c on a.userId = c.userId where 1=1
+		<if test="userName != null and userName != ''"> and userName like "%"#{userName}"%"</if>
+		<if test="cellPhone != null and cellPhone != ''"> and cellPhone like "%"#{cellPhone}"%"</if>
+		<if test="realName != null and realName != ''"> and realName like "%"#{realName}"%"</if>
+		<if test="cardStatus != null "> and cardStatus = #{cardStatus}</if>
+		order by a.createTime desc
+	</select>
+	<select id="selectTBankCardDeatil" resultType="TBankCardDtoAlias"
+		parameterType="java.lang.Long">
+		select a.*,b.userName as userName,b.cellPhone as
+		cellPhone,c.realName as realName
+		from t_bank_card a left join c_user b on a.userId = b.id
+		left join t_person
+		c on a.userId = c.userId
+		where a.id=#{id}
+	</select>
+	<select id="selectBankCardlist" resultType="TBankCardDtoAlias">
+		select a.*,b.realName
+		as realName from t_bank_card a left join t_person b on
+		a.userId=b.userId where a.userId=#{userId} and a.cardStatus=2
+	</select>
+
+	<select id="querybankCardNoListByUserId" resultType="String">
+		SELECT
+		b.bankCardNo
+		FROM
+		t_bank_card AS b
+		WHERE
+		b.userId = #{userId}
+	</select>
+
+	<update id="deleteBankCardforid">
+		update t_bank_card set cardStatus=4 where id=#{id}
+		and userId=#{userId}
+	</update>
+</mapper>

@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.p2p.dao.TFundRecordDao">
+	<select id="selectTFundRecordlist" resultType="TFundRecordDtoAlias">
+		select a.*,b.userName as userName,b.cellPhone as cellPhone,c.realName
+		as realName
+		from t_fund_record a left join c_user b on a.userId = b.id
+		left join
+		t_person c on a.userId = c.userId where a.userId=#{userId}
+		<if test="userName != null and userName != ''"> and userName like "%"#{userName}"%"</if>
+		<if test="cellPhone != null and cellPhone != ''"> and cellPhone like "%"#{cellPhone}"%"</if>
+		<if test="realName != null and realName != ''"> and realName like "%"#{realName}"%"</if>
+		order by a.createTime desc
+	</select>
+	<select id="selectTFundRecordDetail" resultType="TFundRecordDtoAlias"
+		parameterType="java.lang.Long">
+		select a.*,b.userName as userName,b.cellPhone as
+		cellPhone,c.realName as realName
+		from t_fund_record a left join c_user b on a.userId = b.id
+		left join
+		t_person c on a.userId = c.userId
+		where a.id=#{id}
+	</select>
+
+	<select id="selectUserList" resultType="UserMoneyDtoAlias">
+		select a.id as id,a.userName as userName,a.cellPhone as
+		cellPhone,b.realName as realName,c.usableAmount as
+		usableAmount,c.frozenAmount as frozenAmount
+		from c_user a left join
+		t_person b on a.id=b.userId
+		left join t_account c on a.id=c.userId
+		where 1=1
+		<if test="userName != null and userName != ''"> and userName like "%"#{userName}"%"</if>
+		<if test="cellPhone != null and cellPhone != ''"> and cellPhone like "%"#{cellPhone}"%"</if>
+		<if test="realName != null and realName != ''"> and realName like "%"#{realName}"%"</if>
+	</select>
+	<select id="selectFundRecord" resultType="TFundRecordDtoAlias">
+		SELECT
+		fr.operAmount,
+		fr.id,
+		fr.inAmount,
+		fr.outAmount,
+		fr.createTime,
+		fr.fundType,
+		fr.operType,
+		fr.userId,
+		fr.fundMode,
+		fr.remarks,
+		fr.usableAmount,
+		fr.frozenAmount,
+		fr.traderId
+		FROM
+		t_fund_record AS fr
+		WHERE
+		fr.userId = #{userId}
+		order by fr.id desc
+	</select>
+</mapper>

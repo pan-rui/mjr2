@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.p2p.dao.BRoleMenuDao">
+
+	
+	
+	<!-- <resultMap type="bRoleMenuAlias" id="queryBRoleMenuByCondition"> <id 
+		column="ROLEID" property="roleId"/> <result column="ROLECODE" property="roleCode"/> 
+		<result column="STATUS" property="status"/> <result column="ROLENAME" property="roleName"/> 
+		<collection property="admins" ofType="adminAlias" > <id column="ID" property="id" 
+		/> <result column="ADMINNAME" property="adminname" /> <result column="MOBLIEPHONE" 
+		property="mobliephone" /> <result column="EMAIL" property="email" /> <result 
+		column="DEPTID" property="deptid" /> </collection> <collection property="permissions" 
+		ofType="permissionAlias"> <id column="PERID" property="perId" /> <result 
+		column="PERCODE" property="perCode" /> <result column="PERTYPE" property="perType" 
+		/> <result column="PERPATH" property="perPath" /> <association property="menu" 
+		javaType="menuAlias"> <id column="PERCODE" property="menuId" /> <result column="MENUNAME" 
+		property="menuName" /> <result column="MODULECODE" property="moduleCode" 
+		/> <result column="M_ICON" property="icon" /> <result column="M_BIGICON" 
+		property="bigIcon" /> </association> </collection> </resultMap> -->
+</mapper>

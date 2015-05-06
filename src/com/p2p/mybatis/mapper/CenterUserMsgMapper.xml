@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.p2p.dao.CUserDao">
+	<select id="selectUserMoney" resultType="TAccountAlias" parameterType="java.lang.Long">
+		select * from t_account where userId=#{userId}
+	</select>
+	<select id="selectDueinCorpus" resultType="java.math.BigDecimal" parameterType="java.lang.Long">
+		select sum(capitalAmount) as capitalAmount from t_repay where investorId=#{investId} and repayStatus=1
+	</select>
+	<select id="selectDueinInterest" resultType="java.math.BigDecimal" parameterType="java.lang.Long">
+		select sum(profitAmount) as capitalAmount from t_repay where investorId=#{investId} and repayStatus=1
+	</select>
+	
+	<select id="selectFinishInterest" resultType="java.math.BigDecimal" parameterType="java.lang.Long">
+		select sum(profitAmount) as capitalAmount from t_repay where investorId=#{investorId} and repayStatus=2
+	</select>
+	
+	<select id="selectAllInvestMoney" resultType="java.math.BigDecimal" parameterType="java.lang.Long">
+		select sum(investAmount) as investAmount from t_invest where investorId=#{investorId} and result=1
+	</select>
+	
+	<select id="selectInvestSum" resultType="java.lang.Integer" parameterType="java.lang.Long">
+		select count(*) from t_invest where investorId=#{investorId} and result=1
+	</select>
+	
+	<select id="selectInvestSumReceived" resultType="java.lang.Integer" parameterType="java.lang.Long">
+		select count(*) from t_invest a left join t_borrow b on a.borrowId=b.id where a.investorId = #{investorId} and result= 1 and b.borrowStatus=6
+	</select>
+	
+	<select id="selectInvestSumNoReceived" resultType="java.lang.Integer" parameterType="java.lang.Long">
+		select count(*) from t_invest a left join t_borrow b on a.borrowId=b.id where a.investorId = #{investorId} and result= 1 and b.borrowStatus=5
+	</select>
+	<!-- 修改密码 -->
+	<update id="updatepwd">
+		update c_user set pwd=#{pwd} where id=#{id}
+	</update>
+</mapper>

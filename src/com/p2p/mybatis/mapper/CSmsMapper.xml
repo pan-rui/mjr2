@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.p2p.dao.CSmsDao">
+	<select id="queryCSmsPage" resultType="cSmsAlias" >
+     	select s.*,c.userName AS userName,p.realName as realName from c_sms s 
+     	left join c_user c on c.id=s.userId left join t_person p on p.userId=s.userId where 1=1
+     	<if test="userName != null and userName != ''"> and userName like "%"#{userName}"%"</if>
+     	<if test="realName != null and realName != ''"> and realName like "%"#{realName}"%"</if>
+     	<if test="cellPhone != null and cellPhone != ''"> and s.cellPhone = #{cellPhone}</if>
+     	<if test="sendStatus != null and sendStatus != ''"> and sendStatus = #{sendStatus}</if>
+    </select>
+    
+</mapper>

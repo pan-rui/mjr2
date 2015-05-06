@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.p2p.dao.TRepayDao">
+	<select id="queryTRepayListByBorrowIdAndPeriod" resultType="tRepayAlias">
+		select * from t_repay where borrowId=#{borrowId} and numOfPeriods=#{numOfPeriods}
+	</select>
+	
+	
+	<select id="queryTRepayList" resultType="tRepayAlias">
+		select * from t_repay where 1=1
+		<if test="investId != null">
+			and investId=#{investId}
+		</if>
+		<if test="repayStatus != null">
+			and repayStatus=#{repayStatus}
+		</if>
+		
+	</select>
+
+	<select id="queryRepayCapitalProfitAmount" resultType="tRepayAlias">
+		select sum(capitalAmount) as capitalAmount,sum(profitAmount) as profitAmount from t_repay where borrowId=#{borrowId} 
+		<if test="numOfPeriods != null">
+			and numOfPeriods=#{numOfPeriods}
+		</if>
+		<if test="repayStatus != null">
+			and repayStatus=#{repayStatus}
+		</if>
+		<if test="investId != null">
+			and investId=#{investId}
+		</if>
+	</select>
+	
+	<select id="queryDueinRepayCapitalProfitAmount" resultType="tRepayAlias">
+		select sum(capitalAmount) as capitalAmount,sum(profitAmount) as profitAmount from t_repay where 
+		 repayStatus=1
+		 and investorId=#{investorId}
+		
+	</select>
+	
+	<select id="queryLastRealRepayDate" resultType="java.util.Date">
+		select max(repayDate) from t_repay where repayStatus=2 and investId=#{investId} 
+	</select>
+	
+	<select id="queryFisrtRepayDate" resultType="java.util.Date">
+		select min(repayDate) from t_repay where investId=#{investId} 
+	</select>
+	
+	<select id="queryLastRepayDate" resultType="java.util.Date">
+		select max(repayDate) from t_repay where investId=#{investId} 
+	</select>
+	
+	
+	<select id="queryTRepayBorrowPage" resultType="repayDtoAlias">
+		select  r.*,c.userName,p.realName from t_repay r
+		LEFT JOIN c_user c on c.id = r.investorId 
+		LEFT JOIN t_person p on p.userId = c.id
+		where 1=1
+		<if test="userName != null and userName != ''">
+			and c.userName like "%"#{userName}"%"
+		</if>
+		<if test="realName != null and realName != ''">
+			and p.realName like "%"#{realName}"%"
+		</if>
+		<if test="numOfPeriods != null">
+			and r.numOfPeriods=#{numOfPeriods}
+		</if>
+		<if test="borrowId != null">
+			and r.borrowId=#{borrowId}
+		</if>
+	</select>
+	
+	<select id="queryTRepayAccountListByBorrowIdAndPeriod" resultType="tRepayAlias">
+		SELECT
+			r.*,
+			ta.thirdUserId
+			FROM
+			t_repay AS r
+			LEFT JOIN t_thrid_account AS ta ON r.investorId = ta.userId
+		where r.borrowId=#{borrowId} and r.numOfPeriods=#{numOfPeriods}
+	</select>
+	
+	<select id="queryTRepayListByBorrowIdGroupPeriod" resultType="tRepayAlias">
+		select 
+			sum(capitalAmount) as  capitalAmount,
+		    sum(profitAmount) as profitAmount,
+		    sum(remainCapitalAmount) as remainCapitalAmount,
+		    sum(remainProfitAmount) as remainProfitAmount,
+		    borrowId,
+		    repayStatus,
+		    repayDate,
+		    peroids,
+		    numOfPeriods
+	 	from t_repay 
+	 	where 
+	 		borrowId=#{borrowId} 
+	 	GROUP BY borrowId,numOfPeriods,repayStatus,repayDate,peroids
+		
+	</select>
+
+</mapper>

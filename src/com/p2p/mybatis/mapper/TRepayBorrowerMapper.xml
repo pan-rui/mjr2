@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.p2p.dao.TRepayBorrowerDao">
+	<select id="queryTRepayBorrowerByBorrowIdAndPeriods" resultType="tRepayBorrowerAlias">
+		select * from t_repay_borrower where borrowId=#{borrowId} and numOfPeriods=#{numOfPeriods}
+	</select>
+	
+	<select id="queryTRepayBorrowerByOrdId" resultType="tRepayBorrowerAlias">
+		select * from t_repay_borrower where ordId=#{ordId} 
+	</select>
+	
+	
+	<update id="updateSuccessRepayBorrower" >
+		update t_repay_borrower set repayStatus=2,realRepayTime=#{realRepayTime}
+		where id=#{id} and repayStatus=3
+	</update>
+	
+	
+	<update id="updateRebackRepayBorrower" >
+		update t_repay_borrower set repayStatus=1
+		where id=#{id} and repayStatus=3
+	</update>
+	
+	<select id="queryTRepayBorrowerByBorrowId" resultType="tRepayBorrowerAlias">
+		select sum(capitalAmount) as capitalAmount,sum(profitAmount) as profitAmount 
+		from t_repay_borrower 
+		where borrowId=#{borrowId} and  repayStatus=#{repayStatus}
+	</select>
+	
+	
+	<update id="updateClockRepayBorrower" >
+		update t_repay_borrower set repayStatus=3
+		where id=#{id} and repayStatus=1
+	</update>
+	
+	<select id="queryTRepayBorrowerPage" resultType="tRepayBorrowerDtoAlias">
+		select  repay.*,b.borrowTitle,b.deadline,b.deadlineType,
+			b.annualRate,c.userName as borrowerName,a.usableAmount from t_repay_borrower repay
+		LEFT JOIN t_borrow b on repay.borrowId = b.id
+		LEFT JOIN c_user c on c.id = b.borrowerId
+		LEFT JOIN t_account a on a.userId=c.id where 1=1
+		<if test="borrowTitle != null and borrowTitle != ''">
+			and b.borrowTitle like "%"#{borrowTitle}"%"
+		</if>
+		<if test="borrowerName != null and borrowerName != ''">
+			and c.userName like "%"#{borrowerName}"%"
+		</if>
+		<if test="repayStatus != null ">
+			and repay.repayStatus=#{repayStatus}
+		</if>
+		order by repay.repayStatus asc,repay.repayDate asc
+	</select>
+	
+	<select id="queryTRepayBorrowerList" resultType="tRepayBorrowerAlias">
+		select * from t_repay_borrower 
+		 where 1=1
+		<if test="repayStatus != null">
+			and repayStatus=#{repayStatus}
+		</if>
+		<if test="realRepayTime != null">
+		<![CDATA[	and realRepayTime<=#{realRepayTime}]]>
+		</if>
+	</select>
+	<select id="queryLastRepayDate" resultType="java.util.Date">
+		select max(repayDate) from t_repay_borrower where borrowId=#{borrowId} 
+	</select>
+
+
+</mapper>

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.p2p.dao.TRechargeDao">
+	<select id="queryRechargeRecord" resultType="RechargeRecordAlias">
+		select a.id as id,a.rechargeAmount as rechargeAmount,a.rechargeRealAmount as rechargeRealAmount,a.feeAmount as feeAmount,a.createTime as createTime,
+		a.result as result,a.finishTime as finishTime,a.ordDate as ordDate,a.ordId as ordId,a.thirdOrdId as thirdOrdId,a.bankName as bankName,b.userName as userName,
+		a.remarks as remarks,a.ip as ip,b.cellPhone as cellPhone,c.realName as realName from t_recharge a left join c_user b on a.userId = b.id  left join t_person c on
+		  a.userId = c.userId where 1=1
+		<if test="userName != null and userName != ''"> and userName like "%"#{userName}"%"</if>
+     	<if test="cellPhone != null and cellPhone != ''"> and cellPhone like "%"#{cellPhone}"%"</if>
+     	<if test="realName != null and realName != ''"> and realName like "%"#{realName}"%"</if>
+     	<if test="result != null "> and result = #{result}</if>
+     	 order by a.createTime desc
+	</select>
+	<select id="selectRechargeRecord" resultType="RechargeRecordAlias" parameterType="java.lang.Long">
+	select a.id as id,a.rechargeAmount as rechargeAmount,a.rechargeRealAmount as rechargeRealAmount,a.feeAmount as feeAmount,a.createTime as createTime,
+		a.result as result,a.finishTime as finishTime,a.ordDate as ordDate,a.ordId as ordId,a.thirdOrdId as thirdOrdId,a.bankName as bankName,b.userName as userName,
+		a.remarks as remarks,a.ip as ip,b.cellPhone as cellPhone,c.realName as realName from t_recharge a 
+		left join c_user b on a.userId = b.id  
+		left join t_person c on a.userId = c.userId 
+		where a.id=#{id} order by a.createTime desc
+	</select>
+</mapper>

@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.p2p.dao.CUserDao">
+	<select id="queryCUserPage" resultType="hashAlias" >
+     	select c.*,p.realName as realName,p.sex as sex , p.isAuth as isAuth from  c_user c 
+     	left join t_person p on p.userId=c.id
+     	left join t_thrid_account a on a.userId=c.id  where 1=1
+     	<if test="userName != null and userName != ''"> and userName like "%"#{userName}"%"</if>
+     	<if test="cellPhone != null and cellPhone != ''"> and cellPhone like "%"#{cellPhone}"%"</if>
+     	<if test="realName != null and realName != ''"> and realName like "%"#{realName}"%"</if>
+     	<if test="isEnable != null "> and isEnable = #{isEnable}</if>
+     	<if test="source != null "> and source =#{source}</if>
+     	<if test="isOpen != null "> and a.isOpen =#{isOpen}</if>
+    </select>
+    <select id="getOneUser" resultType="dUserAlias">
+    	select c.*,p.realName as realName,p.cardNo as cardNo,p.sex as sex,p.createTime as pcreateTime,p.isAuth as isAuth from  c_user c 
+     	left join t_person p on p.userId=c.id where c.id = #{id}
+    </select>
+    
+    <select id="queryLoginUser" resultType="cUserAlias">
+	SELECT
+	u.id,
+	u.userName,
+	u.email,
+	u.cellPhone,
+	u.isEnable
+	FROM
+	c_user AS u
+	WHERE
+	(u.userName = #{userName} or u.cellPhone = #{userName}) AND
+	u.pwd = #{pwd}
+    	
+    </select>
+    <select id="verificationNewUserPhone" resultType="cUserAlias">
+    	SELECT u.id FROM c_user AS u WHERE u.cellPhone = #{cellPhone}
+    </select>
+    <select id="isExistUserName" resultType="int">
+    	SELECT count(1) FROM c_user AS u WHERE u.userName = #{userName}
+    </select>
+
+    <select id="selectPwd" resultType="java.lang.String">
+			select u.pwd from c_user u where u.id=#{id}
+	</select>
+    
+    <select id="selectallfortel" resultType="java.lang.Long">
+    	select id from c_user where cellPhone=#{cellPhone}
+    </select>
+    
+    <select id="selectconutinvestforid" resultType="java.lang.Long">
+    	select count(*) from t_invest t 
+    	where t.investorId in (select userId from t_referee_relation where refereeId=#{userId}) 
+    	and t.investAmount>=100 
+    	and t.investTime in (select MIN(invest.investTime) from t_invest invest where invest.result=1 GROUP BY investorId)
+    </select>
+    
+    <select id="selectvipforid" resultType="java.lang.String">
+    	select awardTimeLevel from c_user_detail where userId=#{userId}
+    </select>
+    
+    <update id="updatevipzt">
+    	update c_user_detail set awardTimeLevel=#{awardTimeLevel},awardExpirationDate=#{awardExpirationDate} where userId=#{userId}
+    </update>
+    
+    <select id="selectvipzt" resultType="CUserDetailAlias">
+    <![CDATA[
+    	select userId from c_user_detail where awardTimeLevel <> 'V0' and now() > awardExpirationDate
+    ]]>
+    </select>
+    
+    <update id="updatevipzt2">
+    	update c_user_detail set awardTimeLevel='V0' where userId=#{userId}
+    </update>
+    
+    <select id="selectisNew" resultType="CUserDetailAlias">
+    	SELECT a.userId as userId FROM c_user_detail a
+		WHERE a.isNew=1
+		and a.userId in (select invest.investorId from t_invest invest where invest.result=1 AND invest.investTime > #{investTime})
+    </select>
+    
+    <update id="updateisNew">
+    	update c_user_detail set isNew=0 where userId=#{userId}
+    </update>
+    
+    <select id="selectisNewforuserid" resultType="java.lang.Long">
+    	select isNew from c_user_detail where userId=#{userId}
+    </select>
+    <select id="queryAlluserid" resultType="java.lang.Long">
+    	select id from c_user
+    </select>
+</mapper>

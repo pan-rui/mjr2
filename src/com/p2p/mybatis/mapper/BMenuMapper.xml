@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.p2p.dao.BMenuDao">
+
+	<select id="queryBMenuByRoleId" resultType="bMenuAlias"
+		parameterType="java.lang.Long">
+		select * from b_menu m where 1=1
+		m.id in (select
+		rm.menuId from b_role_menu rm where rm.roleId=#roleId# )
+	</select>
+	
+	<select id="queryBMenuPage" resultType="bMenuAlias"
+		parameterType="bMenuAlias">
+		select m.*,p.menuName as parentName from b_menu m 
+		left join b_menu p on m.parentId=p.id
+		where 1=1
+		<if test="bMenu.menuName != null and bMenu.menuName != '' "> and m.menuName like "%"#{bMenu.menuName}"%"</if>
+		<if test="bMenu.isIntercept != null  "> and m.isIntercept=#{bMenu.isIntercept}</if>
+		<if test="bMenu.parentId != null ">and m.parentId=#{bMenu.parentId}</if>
+	</select>
+	
+	<select id="queryRigthsByAdminId" parameterType="java.lang.Long" resultType="bMenuAlias">
+		select DISTINCT m.*
+		from b_menu m LEFT JOIN
+		b_role_menu rm on rm.menuId=m.id
+		LEFT JOIN b_role_admin ra on ra.roleId=rm.roleId
+		where ra.adminId=#{adminId} and m.menuLevel!=3
+	</select>
+</mapper>

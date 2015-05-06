@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.p2p.dao.TBorrowDao">
+	
+	<!-- 更新募集金额 -->
+	<update id="updateHasBorrowAmount" >
+		<![CDATA[
+			update t_borrow set hasBorrowAmount= hasBorrowAmount+#{hasBorrowAmount},clockAmount=clockAmount-#{hasBorrowAmount}
+			where id=#{id} and borrowAmount>=hasBorrowAmount+#{hasBorrowAmount}
+		]]>
+	
+	</update>
+	
+	<!-- 满标更新状态 -->
+	<update id="updateFullBorrow" >
+		<![CDATA[
+			update t_borrow set fullTime= #{fullTime},borrowStatus=#{borrowStatus}
+			where id=#{id} and borrowAmount=hasBorrowAmount and borrowStatus=3
+		]]>
+	
+	</update>
+	
+	<update id="updateClockAmount" >
+		<![CDATA[
+			update t_borrow set clockAmount= #{clockAmount}
+			where id=#{borrowId} and  borrowStatus=3 and borrowAmount >=hasBorrowAmount+clockAmount+#{clockAmount}
+		]]>
+	
+	</update>
+	
+	<!-- 满标或流标核更新 -->
+	<update id="updateBorrowAuditTwo" >
+		<![CDATA[
+			update t_borrow set auditTime= #{auditTime},fullAuditId=#{fullAuditId},borrowStatus=#{borrowStatus}
+			where id=#{id} and  borrowStatus=4
+		]]>
+	
+	</update>
+	
+	<!-- 满标审核更新 -->
+	<update id="updateBorrowFullAuditBack" >
+		<![CDATA[
+			update t_borrow set borrowStatus=#{borrowStatus}
+			where id=#{id} and  borrowStatus=10
+		]]>
+	
+	</update>
+	
+	<update id="updateBorrowFlowAuditBack" >
+		<![CDATA[
+			update t_borrow set borrowStatus=#{borrowStatus}
+			where id=#{id} and  borrowStatus=11
+		]]>
+	
+	</update>
+	
+	
+	<!--还款更新状态 -->
+	<update id="updateRepayAllBorrow" >
+		<![CDATA[
+			update t_borrow set borrowStatus=6
+			where id=#{borrowId} and  borrowStatus=5
+		]]>
+	
+	</update>
+	
+	<update id="updateBorrowFirstAudit" >
+		<![CDATA[
+			update t_borrow set borrowStatus=#{borrowStatus},investStartTime=#{investStartTime},firstAuditId=#{firstAuditId},ordId=#{ordId}
+			where id=#{id} and  borrowStatus=1
+		]]>
+	</update>
+	
+	<update id="updateBorrowResetBackFullStatus" >
+		<![CDATA[
+			update t_borrow set borrowStatus=4
+			where id=#{id} and  borrowStatus=10
+		]]>
+	</update>
+	
+	
+	<update id="updateBorrowStartInvest" >
+		<![CDATA[
+			update t_borrow set borrowStatus=3
+			where id=#{id} and  borrowStatus=2
+		]]>
+	</update>
+	
+	
+	
+	<select id="queryBorrowDtoPage" resultType="borrowDtoAlias">
+		SELECT
+			u.userName as borrowerUserName,
+			b.id,
+			b.borrowTitle,
+			b.borrowerId,
+			b.annualRate,
+			b.borrowAmount,
+			b.deadline,
+			b.deadlineType,
+			b.raisingPeriod,
+			b.minInvestAmount,
+			b.maxInvestAmount,
+			b.repayType,
+			b.borrowStatus,
+			b.investStartTime,
+			b.fullTime,
+			b.borrowNo,
+			b.personBorrowerId,
+			pb.borrowerName,
+			pb.borrowerIdCard,
+			pb.borrowerCellPhone
+		FROM
+			t_borrow AS b
+		LEFT JOIN c_user AS u ON b.borrowerId = u.id
+		LEFT JOIN t_person_borrower AS pb ON b.personBorrowerId = pb.id
+		where 1=1
+		<if test="borrowTitle != null and borrowTitle != ''"> and b.borrowTitle like "%"#{borrowTitle}"%"</if>
+		<if test="borrowerUserName != null and borrowerUserName != ''"> and u.userName like "%"#{borrowerUserName}"%"</if>
+		<if test="borrowerName != null and borrowerName != ''"> and pb.borrowerName like "%"#{borrowerName}"%"</if>
+		<if test="borrowStatus != null"> and b.borrowStatus=#{borrowStatus}</if>
+		order by id desc
+	</select>
+	
+	<select id="queryTBorrowListByInvestDate" resultType="tBorrowAlias">
+		select * from t_borrow b where b.borrowStatus=2
+	</select>
+	
+	
+	<select id="queryTBorrowListPage" resultType="tBorrowAlias">
+		SELECT
+		    b.id,
+			b.borrowTitle,
+			b.annualRate,
+			b.borrowAmount,
+			b.minInvestAmount,
+			b.deadline,
+			b.borrowStatus,
+			b.deadlineType,
+			b.raisingPeriod,
+			b.hasBorrowAmount/b.borrowAmount as progress,
+			b.borrowAmount - b.hasBorrowAmount as mayCast,
+			b.repayType
+		FROM
+			t_borrow AS b
+		where  
+	       b.borrowStatus in (2,3,4,5,6)
+	     <if test="borrowStatus != null"> and b.borrowStatus=#{borrowStatus}</if>
+	     <if test="repayType != null"> and b.repayType=#{repayType}</if>
+	     <if test="startDeadline != null"><![CDATA[  and b.deadline>=#{startDeadline}]]></if>
+	     <if test="endDeadline != null"><![CDATA[  and b.deadline<=#{endDeadline}]]></if>
+	    order by b.borrowStatus asc
+	</select>
+	
+		<select id="queryIndexTBorrowListPage" resultType="tBorrowAlias">
+		SELECT
+		    b.id,
+			b.borrowTitle,
+			b.annualRate,
+			b.borrowAmount,
+			b.minInvestAmount,
+			b.deadline,
+			b.borrowStatus,
+			b.deadlineType,
+			b.raisingPeriod,
+			b.hasBorrowAmount/b.borrowAmount as progress,
+			b.borrowAmount - b.hasBorrowAmount as mayCast,
+			b.repayType,
+			b.fullTime
+		FROM
+			t_borrow AS b
+		where  
+	       b.borrowStatus in (3,4,5)
+	    order by b.borrowStatus asc
+	</select>
+	
+	<select id="queryTBorrowList" resultType="tBorrowAlias">
+		SELECT
+		   *
+		FROM
+			t_borrow AS b
+		where  1=1
+	     <if test="borrowStatus != null"> and b.borrowStatus=#{borrowStatus}</if>
+	   	 <if test="auditTime != null"><![CDATA[ and b.auditTime<=#{auditTime}]]></if>
+	</select>
+	
+	<select id="getTBorrowByOrdId" resultType="tBorrowAlias">
+		select * from t_borrow b where b.ordId=#{ordId}
+	</select>
+</mapper>

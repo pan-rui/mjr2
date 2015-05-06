@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.p2p.dao.TTransferDao">
+	<update id="updateTTransfer">
+		update t_transfer set statusRemarks=#{statusRemarks},
+		tranStatus=#{tranStatus},finishTime=#{finishTime} 
+		where ordId=#{ordId} and tranStatus=1
+	</update>
+	
+	<select id="getTTransferByOrdId" resultType="tTransferAlias">
+		select * from t_transfer  where ordId=#{ordId}
+	</select>
+	
+	
+	<select id="queryTTransferList" resultType="tTransferAlias">
+		select * from t_transfer  where 1=1
+		<if test="tranStatus != null"> and tranStatus=#{tranStatus}</if>
+	</select>
+	
+	
+</mapper>
